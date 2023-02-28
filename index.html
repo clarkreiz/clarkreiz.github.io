@@ -6,12 +6,141 @@
 	<title>artyom_xabarov</title>
 </head>
 <body>
-	<header>
-			<h1>
-		Привет мир!
-	</h1>
-	</header>
+	<style type="text/css">
+		.rectangle {
+		  width: 120px;
+		  height: 100px;
+		  background-color: #3f51b5;
+		  position: absolute;
+		  top: 500;
+		  left: 500;
+		  cursor: grab;
+/*		  transition: transform 0.001s ease-in-out;*/
+		}
+		.rectangle:active {
+		  cursor: grabbing;
+		  transform: scale(1.1);
+		  z-index: 1;
+		}
+
+	</style>
+
+<div class="rectangle"></div>
 
 
+
+	<script>
+
+		class Rectangle {
+  static count = 0;
+  
+  constructor(element, color = '#3f51b5') {
+    this.id = ++Rectangle.count;
+    this.element = element;
+    this.color = color;
+    this.isDragging = false;
+    this.mouseOffset = { x: 0, y: 0 };
+    
+    this.element.style.backgroundColor = this.color;
+    this.element.addEventListener('mousedown', this.onMouseDown.bind(this));
+    this.element.addEventListener('mouseup', this.onMouseUp.bind(this));
+    document.addEventListener('mousemove', this.onMouseMove.bind(this));
+  }
+  
+  onMouseDown(event) {
+    this.isDragging = true;
+    this.mouseOffset = { x: event.offsetX, y: event.offsetY };
+    this.element.style.cursor = 'grabbing';
+    this.element.style.zIndex = '1000';
+  }
+  
+ onMouseUp() {
+    this.isDragging = false;
+    this.element.style.cursor = 'grab';
+    this.element.style.zIndex = '0';
+    
+    // Check if another rectangle is being dragged
+    const otherRectangle = Rectangle.getDraggedRectangle();
+    if (otherRectangle && otherRectangle !== this) {
+      new Rope(otherRectangle, this);
+    }
+  }
+  onMouseMove(event) {
+    if (this.isDragging) {
+      const x = event.clientX - this.mouseOffset.x;
+      const y = event.clientY - this.mouseOffset.y;
+      this.element.style.transform = `translate(${x}px, ${y}px)`;
+      this.updateRopes();
+    }
+  }
+  
+  updateRopes() {
+    const ropes = Rope.getRopesByRectangle(this);
+    for (const rope of ropes) {
+      rope.update();
+    }
+  }
+}
+
+class Rope {
+  static ropes = [];
+  
+  static getRopesByRectangle(rectangle) {
+    return this.ropes.filter(rope => rope.startRectangle === rectangle || rope.endRectangle === rectangle);
+  }
+  
+  constructor(startRectangle, endRectangle) {
+    this.id = ++Rope.count;
+    this.startRectangle = startRectangle;
+    this.endRectangle = endRectangle;
+    this.element = document.createElement('div');
+    this.element.classList.add('rope');
+    this.update();
+    document.body.appendChild(this.element);
+    this.constructor.ropes.push(this);
+  }
+  
+  update() {
+    const startX = this.startRectangle.element.offsetLeft + this.startRectangle.element.offsetWidth / 2;
+    const startY = this.startRectangle.element.offsetTop + this.startRectangle.element.offsetHeight / 2;
+    const endX = this.endRectangle.element.offsetLeft + this.endRectangle.element.offsetWidth / 2;
+    const endY = this.endRectangle.element.offsetTop + this.endRectangle.element.offsetHeight / 2;
+    const distance = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+    const angle = Math.atan2(endY - startY, endX - startX);
+    this.element.style.width = `${distance}px`;
+    this.element.style.transform = `translate(${startX}px, ${startY}px) rotate(${angle}rad)`;
+  }
+}
+const addButton = document.createElement('button');
+addButton.innerText = 'Add Rectangle';
+addButton.addEventListener('click', () => {
+  const element = document.createElement('div');
+  element.classList.add('rectangle');
+  const rectangle = new Rectangle(element, getRandomColor());
+  document.body.appendChild(rectangle.element);
+});
+
+// Add the button to the document
+document.body.appendChild(addButton);
+function getRandomColor() {
+const letters = '0123456789ABCDEF';
+let color = '#';
+for (let i = 0; i < 6; i++) {
+color += letters[Math.floor(Math.random() * 16)];
+}
+return color;
+}
+
+// Create some initial rectangles
+for (let i = 0; i < 3; i++) {
+const element = document.createElement('div');
+element.classList.add('rectangle');
+const rectangle = new Rectangle(element, getRandomColor());
+document.body.appendChild(rectangle.element);
+}
+const rectangle = new Rectangle(document.querySelector('.rectangle'));
+
+    </script>
 </body>
+
 </html>
