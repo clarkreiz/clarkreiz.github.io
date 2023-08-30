@@ -17,7 +17,7 @@
 <li>Пройти бесплатную часть <a href="https://htmlacademy.ru/">https://htmlacademy.ru/</a> курсы: <a href="https://htmlacademy.ru/courses/basic-html-css">https://htmlacademy.ru/courses/basic-html-css</a> </li>
 <li>После прохождении всех тестовых заданий спросить у меня какой сделать сайт, я найду дизайн</li>
 </ol>
-<p>![[Pasted Graphic.png]]</p>
+<img src="pic.png" />
 <ol>
 <li>Выбрать из этих курсов какой больше нравится и пройти его </li>
 <li>Финальный проект от Артема</li>
@@ -37,10 +37,14 @@
   margin: 0 auto; /* Центрирование контейнера по горизонтали */
   line-height: 1.6;
   font-size: 16px;
-  margin: 0;
-  padding: 0 20px; /* Добавление отступов справа и слева */
+  padding: 0 100px; /* Добавление отступов справа и слева */
 }
-
+@media (max-width: 768px) {
+  .text-container {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+}
 /* Стили для заголовков */
 h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
